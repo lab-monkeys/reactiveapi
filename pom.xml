@@ -8,6 +8,8 @@
   <properties>
     <compiler-plugin.version>3.8.1</compiler-plugin.version>
     <maven.compiler.release>17</maven.compiler.release>
+    <org.lombok.version>1.18.24</org.lombok.version>
+    <org.mapstruct.version>1.5.2.Final</org.mapstruct.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
@@ -15,8 +17,6 @@
     <quarkus.platform.version>2.10.2.Final</quarkus.platform.version>
     <skipITs>true</skipITs>
     <surefire-plugin.version>3.0.0-M7</surefire-plugin.version>
-    <org.lombok.version>1.18.24</org.lombok.version>
-    <org.mapstruct.version>1.5.2.Final</org.mapstruct.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -53,6 +53,10 @@
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-arc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-scheduler</artifactId>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>

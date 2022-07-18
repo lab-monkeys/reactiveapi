@@ -1,1 +1,12 @@
-{}
+quarkus:
+  application:
+    name: reactiveApi
+  http:
+    port: 4080
+  log:
+    level: "INFO"
+    console:
+      enable: true
+api-server:
+  url: http://localhost:4080
+  schedule: "10s"

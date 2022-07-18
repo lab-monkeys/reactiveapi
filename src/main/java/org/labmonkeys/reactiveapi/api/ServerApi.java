@@ -8,12 +8,14 @@ import javax.ws.rs.core.Response;
 
 import org.labmonkeys.reactiveapi.dto.MessageDto;
 
+import io.smallrye.mutiny.Uni;
+
 @Path("/api-test")
 public interface ServerApi {
 
     @POST
     @Path("/message")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response receiveMessage(MessageDto message);
+    public Uni<Response> receiveMessage(MessageDto message);
 
 }
