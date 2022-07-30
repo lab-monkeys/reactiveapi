@@ -2,11 +2,11 @@ quarkus:
   application:
     name: reactiveApi
   http:
-    port: 4080
+    port: ${SERVER_PORT}
   log:
     level: "INFO"
     console:
       enable: true
 api-server:
-  url: http://localhost:4080
+  url: ${SERVER_URL}
   schedule: "10s"

@@ -7,7 +7,8 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class Message {
+public class Reply {
     UUID messageId;
-    String message;
+    UUID replyId;
+    String reply;
 }

@@ -17,6 +17,7 @@
     <quarkus.platform.version>2.10.2.Final</quarkus.platform.version>
     <skipITs>true</skipITs>
     <surefire-plugin.version>3.0.0-M7</surefire-plugin.version>
+    <hello.there>1.2.3</hello.there>
   </properties>
   <dependencyManagement>
     <dependencies>

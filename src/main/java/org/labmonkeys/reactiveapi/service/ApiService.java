@@ -29,6 +29,7 @@ public class ApiService implements ServerApi {
     public Uni<Response> receiveMessage(MessageDto message) {
         
         LOG.info("Received Message From API: " + message);
+        LOG.info("Sending Message to Bus");
         return eventBus.<MessageDto>request("message", message).onItem().transform(item -> Response.ok(item.body()).build());
     }
 
@@ -45,5 +46,23 @@ public class ApiService implements ServerApi {
     @Override
     public List<MessageDto> getResponseMessages() {
         return server.getResponseMessages();
+    }
+
+    @Override
+    public Response clearMessages() {
+        server.clearMessages();
+        return Response.ok().build();
+    }
+
+    @Override
+    public Response goToSleep() {
+        server.sleep();
+        return Response.ok().build();
+    }
+
+    @Override
+    public Response wakeUp() {
+        server.wakeUp();
+        return Response.ok().build();
     }
 }

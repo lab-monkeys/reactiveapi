@@ -1,6 +1,7 @@
 package org.labmonkeys.reactiveapi;
 
 import java.net.URI;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -15,6 +16,7 @@ import org.eclipse.microprofile.rest.client.RestClientBuilder;
 import org.jboss.logging.Logger;
 import org.labmonkeys.reactiveapi.api.ServerApi;
 import org.labmonkeys.reactiveapi.dto.MessageDto;
+import org.labmonkeys.reactiveapi.dto.ReplyDto;
 import org.labmonkeys.reactiveapi.mapper.MessageMapper;
 import org.labmonkeys.reactiveapi.model.Message;
 
@@ -33,6 +35,10 @@ public class ReactiveApp {
 
     List<Message> responses;
 
+    List<Message> failedMessages;
+
+    boolean pause;
+
     @Inject
     MessageMapper mapper;
 
@@ -41,17 +47,25 @@ public class ReactiveApp {
         this.sentMessages = new ArrayList<Message>();
         this.receivedMessages = new ArrayList<Message>();
         this.responses = new ArrayList<Message>();
+        this.failedMessages =  new ArrayList<Message>();
+        this.pause = false;
 
     }
 
     @ConsumeEvent("message")
-    public MessageDto processMessage(MessageDto request) {
+    public ReplyDto processMessage(MessageDto request) {
 
         LOG.info("Received Message From Bus: " + request);
+        if (pause) {
+            try {
+                Thread.sleep(2500);
+            } catch (Exception e) {
+                //TODO: handle exception
+            }
+            
+        }
         this.receivedMessages.add(mapper.dtoToMessage(request));
-        MessageDto response = new MessageDto();
-        response.setMessage("Hello To You!");
-        response.setMessageId(UUID.randomUUID());
+        ReplyDto response = new ReplyDto(request.messageId(), UUID.randomUUID(), "Hello To You!");
         return response;
     }
 
@@ -62,13 +76,11 @@ public class ReactiveApp {
     public void sendMessage() {
 
         LOG.info("Scheduler Fired");
-        MessageDto message = new MessageDto();
-        message.setMessageId(UUID.randomUUID());
-        message.setMessage("Hello There");
+        MessageDto message = new MessageDto(UUID.randomUUID(), "Hello There");
         LOG.info("Sending message: " + message);
         this.sentMessages.add(mapper.dtoToMessage(message));
         ServerApi api = RestClientBuilder.newBuilder().baseUri(URI.create(this.url)).build(ServerApi.class);
-        api.receiveMessage(message).subscribe().with(item -> processResponse(item));
+        api.receiveMessage(message).ifNoItem().after(Duration.ofMillis(2000)).failWith(new Exception("Request Timeout")).subscribe().with(item -> processResponse(item), fail -> handleFailure(message, fail));
     }
 
     private void processResponse(Response response) {
@@ -76,6 +88,11 @@ public class ReactiveApp {
         MessageDto responseMessage = response.readEntity(MessageDto.class);
         LOG.info(responseMessage);
         this.responses.add(mapper.dtoToMessage(responseMessage));
+    }
+
+    private void handleFailure(MessageDto message, Throwable error) {
+        LOG.error("Failed sending message: " + message + error.getMessage());
+        failedMessages.add(mapper.dtoToMessage(message));
     }
 
     public List<MessageDto> getSentMessages() {
@@ -88,5 +105,19 @@ public class ReactiveApp {
 
     public List<MessageDto> getResponseMessages() {
         return mapper.messagesToDtos(this.responses);
+    }
+
+    public void clearMessages() {
+        this.sentMessages.clear();
+        this.receivedMessages.clear();
+        this.responses.clear();
+    }
+
+    public void sleep() {
+        this.pause = true;
+    }
+
+    public void wakeUp() {
+        this.pause = false;
     }
 }

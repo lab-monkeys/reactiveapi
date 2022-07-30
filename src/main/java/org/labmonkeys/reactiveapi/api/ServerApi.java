@@ -22,6 +22,18 @@ public interface ServerApi {
     @Consumes(MediaType.APPLICATION_JSON)
     public Uni<Response> receiveMessage(MessageDto message);
 
+    @POST
+    @Path("/clear")
+    public Response clearMessages();
+
+    @POST
+    @Path("/sleep")
+    public Response goToSleep();
+
+    @POST
+    @Path("/wakeup")
+    public Response wakeUp();
+
     @GET
     @Path("/sent")
     @Produces(MediaType.APPLICATION_JSON)
@@ -33,7 +45,7 @@ public interface ServerApi {
     public List<MessageDto> getReceivedMessages();
 
     @GET
-    @Path("/response")
+    @Path("/responses")
     @Produces(MediaType.APPLICATION_JSON)
     public List<MessageDto> getResponseMessages();
 
